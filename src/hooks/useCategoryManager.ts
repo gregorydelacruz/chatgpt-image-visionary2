@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ProcessedImage } from '@/types/image';
 
@@ -7,6 +7,15 @@ export const useCategoryManager = (images: ProcessedImage[], setImages: React.Di
   const { toast } = useToast();
   const [categories, setCategories] = useState<string[]>(['Uncategorized']);
   const [predefinedCategories, setPredefinedCategories] = useState<string[]>([]);
+
+  // Update categories whenever images change
+  useEffect(() => {
+    // Extract all categories from images
+    const imageCategories = images.map(img => img.category);
+    // Create a unique set of all categories
+    const uniqueCategories = [...new Set(['Uncategorized', ...imageCategories])];
+    setCategories(uniqueCategories);
+  }, [images]);
 
   const setImageCategory = (index: number, category: string) => {
     setImages(prev => prev.map((img, idx) => {
