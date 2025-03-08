@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { recognizeImage } from '@/lib/imageRecognition';
@@ -5,21 +6,39 @@ import { ProcessedImage } from '@/types/image';
 
 // Category mapping for automatic categorization
 const categoryMapping: Record<string, string> = {
-  "tennis": "Sports: Tennis", 
-  "tennis court": "Sports: Tennis", 
-  "tennis racket": "Sports: Tennis",
-  "tennis ball": "Sports: Tennis",
-  "tennis player": "Sports: Tennis",
-  "tennis match": "Sports: Tennis",
-  "tennis tournament": "Sports: Tennis",
+  // Ball category
+  "ball": "Ball",
+  "sphere": "Ball",
+  "round": "Ball",
   
-  "pickleball": "Sports: Pickleball",
-  "pickleball court": "Sports: Pickleball",
-  "pickleball paddle": "Sports: Pickleball",
-  "pickleball ball": "Sports: Pickleball",
-  "pickleball player": "Sports: Pickleball",
-  "pickleball match": "Sports: Pickleball",
-  "pickleball tournament": "Sports: Pickleball"
+  // Sports category
+  "sport": "Sports",
+  "game": "Sports",
+  "athlete": "Sports",
+  "competition": "Sports",
+  "match": "Sports",
+  "tournament": "Sports",
+  "court": "Sports",
+  "field": "Sports",
+  "stadium": "Sports",
+  
+  // Tennis category
+  "tennis": "Tennis", 
+  "tennis court": "Tennis", 
+  "tennis racket": "Tennis",
+  "tennis ball": "Tennis",
+  "tennis player": "Tennis",
+  "tennis match": "Tennis",
+  "tennis tournament": "Tennis",
+  
+  // Pickleball category
+  "pickleball": "Pickleball",
+  "pickleball court": "Pickleball",
+  "pickleball paddle": "Pickleball",
+  "pickleball ball": "Pickleball",
+  "pickleball player": "Pickleball",
+  "pickleball match": "Pickleball",
+  "pickleball tournament": "Pickleball"
 };
 
 // Helper function to determine the most appropriate category based on recognition results

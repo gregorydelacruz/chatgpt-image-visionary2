@@ -5,15 +5,15 @@ import { ProcessedImage } from '@/types/image';
 
 export const useCategoryManager = (images: ProcessedImage[], setImages: React.Dispatch<React.SetStateAction<ProcessedImage[]>>) => {
   const { toast } = useToast();
-  const [categories, setCategories] = useState<string[]>(['Uncategorized', 'Sports: Tennis', 'Sports: Pickleball']);
-  const [predefinedCategories, setPredefinedCategories] = useState<string[]>(['Sports: Tennis', 'Sports: Pickleball']);
+  const [categories, setCategories] = useState<string[]>(['Uncategorized', 'Ball', 'Sports', 'Tennis', 'Pickleball']);
+  const [predefinedCategories, setPredefinedCategories] = useState<string[]>(['Ball', 'Sports', 'Tennis', 'Pickleball']);
 
   // Update categories whenever images change
   useEffect(() => {
     // Extract all categories from images
     const imageCategories = images.map(img => img.category);
     // Create a unique set of all categories
-    const uniqueCategories = [...new Set(['Uncategorized', 'Sports: Tennis', 'Sports: Pickleball', ...imageCategories])];
+    const uniqueCategories = [...new Set(['Uncategorized', 'Ball', 'Sports', 'Tennis', 'Pickleball', ...imageCategories])];
     setCategories(uniqueCategories);
   }, [images]);
 
