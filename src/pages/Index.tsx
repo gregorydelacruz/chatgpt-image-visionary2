@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils"; // Add this import
 import Header from '@/components/Header';
 import ImageUploader from '@/components/ImageUploader';
 import ResultDisplay from '@/components/ResultDisplay';
@@ -241,3 +242,4 @@ const Index = () => {
 };
 
 export default Index;
+
