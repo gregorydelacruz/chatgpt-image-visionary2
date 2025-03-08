@@ -2,77 +2,9 @@
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { recognizeImage } from '@/lib/imageRecognition';
+import { determineCategory } from '@/lib/categoryMapper';
+import { createRenamedFile } from '@/lib/imageUtils';
 import { ProcessedImage } from '@/types/image';
-
-// Category mapping for automatic categorization
-const categoryMapping: Record<string, string> = {
-  // Ball category
-  "ball": "Ball",
-  "sphere": "Ball",
-  "round": "Ball",
-  
-  // Sports category
-  "sport": "Sports",
-  "game": "Sports",
-  "athlete": "Sports",
-  "competition": "Sports",
-  "match": "Sports",
-  "tournament": "Sports",
-  "court": "Sports",
-  "field": "Sports",
-  "stadium": "Sports",
-  
-  // Tennis category
-  "tennis": "Tennis", 
-  "tennis court": "Tennis", 
-  "tennis racket": "Tennis",
-  "tennis ball": "Tennis",
-  "tennis player": "Tennis",
-  "tennis match": "Tennis",
-  "tennis tournament": "Tennis",
-  
-  // Pickleball category
-  "pickleball": "Pickleball",
-  "pickleball court": "Pickleball",
-  "pickleball paddle": "Pickleball",
-  "pickleball ball": "Pickleball",
-  "pickleball player": "Pickleball",
-  "pickleball match": "Pickleball",
-  "pickleball tournament": "Pickleball"
-};
-
-// Helper function to determine the most appropriate category based on recognition results
-const determineCategory = (results: Array<{ label: string; confidence: number }>): string => {
-  if (!results || results.length === 0) return "Uncategorized";
-  
-  // Check each result label against our mapping
-  for (const result of results) {
-    const label = result.label.toLowerCase();
-    
-    // Direct match with keys in the mapping
-    if (categoryMapping[label]) {
-      return categoryMapping[label];
-    }
-    
-    // Check if any key in the mapping is contained within the label
-    for (const [key, category] of Object.entries(categoryMapping)) {
-      if (label.includes(key)) {
-        return category;
-      }
-    }
-    
-    // Check if any word in the label matches a key in the mapping
-    const words = label.split(/\s+/);
-    for (const word of words) {
-      if (categoryMapping[word]) {
-        return categoryMapping[word];
-      }
-    }
-  }
-  
-  // Default category if no matches found
-  return "Uncategorized";
-};
 
 export const useImageProcessor = () => {
   const { toast } = useToast();
@@ -112,22 +44,7 @@ export const useImageProcessor = () => {
         let renamedFile = null;
         if (recognitionResults.length > 0) {
           const topLabel = recognitionResults[0].label;
-          const fileExt = files[i].name.split('.').pop();
-          
-          // Add a timestamp to ensure uniqueness between similar images
-          const timestamp = new Date().getTime();
-          const uniqueSuffix = timestamp.toString().slice(-6);
-          
-          // Clean up the label and create a more descriptive filename
-          const cleanedLabel = topLabel.toLowerCase()
-            .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
-            .replace(/\s+/g, '-');   // Replace spaces with hyphens
-          
-          const newFileName = `${cleanedLabel}-${uniqueSuffix}.${fileExt}`;
-          
-          // Create a new file with the renamed filename
-          const renamedBlob = files[i].slice(0, files[i].size, files[i].type);
-          renamedFile = new File([renamedBlob], newFileName, { type: files[i].type });
+          renamedFile = createRenamedFile(files[i], topLabel);
         }
         
         // Determine the appropriate category based on recognition results
