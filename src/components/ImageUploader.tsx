@@ -5,7 +5,7 @@ import { Upload, ImagePlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ImageUploaderProps {
-  onImageSelected: (file: File) => void;
+  onImageSelected: (files: File[]) => void;
   isProcessing: boolean;
   className?: string;
 }
@@ -16,8 +16,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   className 
 }) => {
   const [dragActive, setDragActive] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [previewImages, setPreviewImages] = useState<{file: File, preview: string}[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -34,43 +33,59 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(Array.from(e.dataTransfer.files));
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(Array.from(e.target.files));
     }
   };
 
-  const handleFile = (file: File) => {
-    // Check if file is an image
-    if (!file.type.match('image.*')) {
-      alert('Please select an image file');
+  const handleFiles = (files: File[]) => {
+    // Filter for only image files
+    const imageFiles = files.filter(file => file.type.match('image.*'));
+    
+    if (imageFiles.length === 0) {
+      alert('Please select image files only');
       return;
     }
     
-    // Save the current file
-    setCurrentFile(file);
+    // Create previews for all images
+    const newPreviews = imageFiles.map(file => {
+      // Create preview
+      const preview = URL.createObjectURL(file);
+      return { file, preview };
+    });
     
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPreviewImage(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Add to existing previews
+    setPreviewImages(prev => [...prev, ...newPreviews]);
     
     // Send to parent
-    onImageSelected(file);
+    onImageSelected(imageFiles);
   };
 
-  const clearImage = (e: React.MouseEvent) => {
+  const clearImage = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setPreviewImage(null);
-    setCurrentFile(null);
+    
+    // Release object URL to prevent memory leaks
+    URL.revokeObjectURL(previewImages[index].preview);
+    
+    // Remove the image at the specified index
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAllImages = () => {
+    // Release all object URLs
+    previewImages.forEach(item => URL.revokeObjectURL(item.preview));
+    
+    // Clear all previews
+    setPreviewImages([]);
+    
+    // Reset file input
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -87,14 +102,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         className={cn(
           "relative rounded-xl border-2 border-dashed p-6 transition-all",
           dragActive ? "border-blue-400 bg-blue-50" : "border-gray-200",
-          previewImage ? "glass border-none" : "",
+          previewImages.length > 0 ? "glass border-none" : "",
           isProcessing ? "opacity-70 pointer-events-none" : "hover:border-blue-300 hover:bg-blue-50"
         )}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => !previewImage && inputRef.current?.click()}
+        onClick={() => previewImages.length === 0 && inputRef.current?.click()}
       >
         <input
           ref={inputRef}
@@ -103,42 +118,59 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           accept="image/*"
           onChange={handleChange}
           disabled={isProcessing}
+          multiple
         />
         
-        {previewImage ? (
+        {previewImages.length > 0 ? (
           <div className="relative">
-            <Button 
-              variant="secondary" 
-              size="icon" 
-              className="absolute top-0 right-0 z-10 m-2 rounded-full" 
-              onClick={clearImage}
-              disabled={isProcessing}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <img 
-              src={previewImage} 
-              alt="Preview" 
-              className={cn(
-                "w-full object-contain max-h-72 rounded-lg transition-opacity duration-300",
-                isProcessing ? "opacity-50" : "opacity-100"
-              )} 
-            />
-            {currentFile && (
-              <p className="mt-2 text-sm text-center text-muted-foreground truncate">
-                {currentFile.name}
-              </p>
+            {previewImages.length > 1 && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="absolute top-0 left-0 z-10 m-2" 
+                onClick={clearAllImages}
+                disabled={isProcessing}
+              >
+                Clear All
+              </Button>
             )}
+            
+            <div className="grid grid-cols-2 gap-4">
+              {previewImages.map((item, index) => (
+                <div key={index} className="relative">
+                  <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className="absolute top-0 right-0 z-10 m-1 rounded-full" 
+                    onClick={(e) => clearImage(index, e)}
+                    disabled={isProcessing}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                  <img 
+                    src={item.preview} 
+                    alt={`Preview ${index + 1}`} 
+                    className={cn(
+                      "w-full h-32 object-cover rounded-lg transition-opacity duration-300",
+                      isProcessing ? "opacity-50" : "opacity-100"
+                    )} 
+                  />
+                  <p className="mt-1 text-xs text-center text-muted-foreground truncate">
+                    {item.file.name}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <div className="mb-4 rounded-full bg-blue-100 p-3">
               <ImagePlus className="h-6 w-6 text-blue-600" />
             </div>
-            <h3 className="mb-1 text-base font-semibold">Upload an image</h3>
+            <h3 className="mb-1 text-base font-semibold">Upload images</h3>
             <p className="text-sm text-muted-foreground mb-4">Drag and drop or click to browse</p>
             <Button variant="outline" className="group">
-              <Upload className="mr-2 h-4 w-4 group-hover:text-blue-500" /> Select Image
+              <Upload className="mr-2 h-4 w-4 group-hover:text-blue-500" /> Select Images
             </Button>
           </div>
         )}
