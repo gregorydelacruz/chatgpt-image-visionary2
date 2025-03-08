@@ -76,7 +76,7 @@ const Index = () => {
         <div className="w-full mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Predefined Categories</span>
+            <span className="text-sm font-medium">Add your own custom categories</span>
           </div>
           <div className="flex gap-2">
             <Input
