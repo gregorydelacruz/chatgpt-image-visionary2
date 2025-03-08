@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { cn } from '@/lib/utils';
@@ -10,6 +11,7 @@ import ImageGallery from '@/components/ImageGallery';
 import DownloadButton from '@/components/DownloadButton';
 import CategorySelector from '@/components/CategorySelector';
 import Footer from '@/components/Footer';
+import ThemeToggle from '@/components/ThemeToggle';
 import { isApiKeySet } from '@/lib/imageRecognition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,6 +69,7 @@ const Index = () => {
             isConfigured={isApiKeyConfigured} 
             onClick={() => setIsApiKeyDialogOpen(true)} 
           />
+          <ThemeToggle />
         </div>
         
         <div className="w-full mb-6">

@@ -87,11 +87,7 @@
 
   /* Glass Effect */
   .glass {
-    @apply bg-white/50 backdrop-blur-md border border-white/30 shadow-sm;
-  }
-
-  .glass-dark {
-    @apply bg-black/30 backdrop-blur-md border border-white/10 shadow-sm;
+    @apply bg-white/50 backdrop-blur-md border border-white/30 shadow-sm dark:bg-black/30 dark:border-white/10;
   }
 
   /* Transitions */
