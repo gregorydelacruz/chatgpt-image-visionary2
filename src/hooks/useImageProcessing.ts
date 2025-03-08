@@ -24,6 +24,7 @@ export const useImageProcessing = () => {
   const [images, setImages] = useState<ProcessedImage[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [categories, setCategories] = useState<string[]>(['Uncategorized']);
+  const [predefinedCategories, setPredefinedCategories] = useState<string[]>([]);
 
   const processImages = async (files: File[]) => {
     // Add the new images to our state with initial values
@@ -155,6 +156,22 @@ export const useImageProcessing = () => {
     }
   };
 
+  const addPredefinedCategories = (newCategories: string[]) => {
+    // Filter out any duplicates
+    const uniqueNewCategories = newCategories.filter(
+      cat => !predefinedCategories.includes(cat)
+    );
+    
+    if (uniqueNewCategories.length > 0) {
+      setPredefinedCategories(prev => [...prev, ...uniqueNewCategories]);
+      
+      toast({
+        title: "Categories added",
+        description: `Added ${uniqueNewCategories.length} predefined categories.`,
+      });
+    }
+  };
+
   const downloadAllAsZip = async () => {
     if (images.length === 0) {
       toast({
@@ -220,11 +237,13 @@ export const useImageProcessing = () => {
     images,
     selectedImageIndex,
     categories,
+    predefinedCategories,
     setSelectedImageIndex,
     processImages,
     downloadRenamedImage,
     setImageCategory,
     addCategory,
+    addPredefinedCategories,
     downloadAllAsZip
   };
 };

@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Folder, Plus, Check } from 'lucide-react';
+import { Folder, Plus, Check, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 interface CategorySelectorProps {
   categories: string[];
@@ -11,6 +12,7 @@ interface CategorySelectorProps {
   onChange: (category: string) => void;
   onAddCategory: (category: string) => void;
   disabled?: boolean;
+  predefinedCategories?: string[];
 }
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({
@@ -18,7 +20,8 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
   currentCategory,
   onChange,
   onAddCategory,
-  disabled = false
+  disabled = false,
+  predefinedCategories = []
 }) => {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategory, setNewCategory] = useState('');
@@ -31,6 +34,9 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     }
     setIsAddingNew(false);
   };
+
+  // All categories - combination of user-added and predefined
+  const allCategories = [...new Set([...categories, ...predefinedCategories])];
 
   return (
     <div className="mb-4">
@@ -59,7 +65,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {categories.map(category => (
+          {allCategories.map(category => (
             <Button
               key={category}
               size="sm"
@@ -72,6 +78,12 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
               )}
             >
               {category}
+              {predefinedCategories.includes(category) && (
+                <Badge variant="secondary" className="ml-1 px-1 py-0">
+                  <Tag className="h-3 w-3 mr-1" />
+                  preset
+                </Badge>
+              )}
             </Button>
           ))}
           <Button

@@ -12,21 +12,27 @@ import DownloadButton from '@/components/DownloadButton';
 import CategorySelector from '@/components/CategorySelector';
 import Footer from '@/components/Footer';
 import { isApiKeySet } from '@/lib/imageRecognition';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tag, Plus } from 'lucide-react';
 
 const Index = () => {
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
   const [isApiKeyConfigured, setIsApiKeyConfigured] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
   
   const {
     isProcessing,
     images,
     selectedImageIndex,
     categories,
+    predefinedCategories,
     setSelectedImageIndex,
     processImages,
     downloadRenamedImage,
     setImageCategory,
     addCategory,
+    addPredefinedCategories,
     downloadAllAsZip
   } = useImageProcessing();
   
@@ -44,6 +50,13 @@ const Index = () => {
     await processImages(files);
   };
 
+  const handleAddPredefinedCategory = () => {
+    if (newCategoryInput.trim()) {
+      addPredefinedCategories([newCategoryInput.trim()]);
+      setNewCategoryInput('');
+    }
+  };
+
   // Get the current selected image for display
   const currentImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
 
@@ -58,6 +71,27 @@ const Index = () => {
             isConfigured={isApiKeyConfigured} 
             onClick={() => setIsApiKeyDialogOpen(true)} 
           />
+        </div>
+        
+        <div className="w-full mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Tag className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Predefined Categories</span>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newCategoryInput}
+              onChange={(e) => setNewCategoryInput(e.target.value)}
+              placeholder="Add a predefined category"
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleAddPredefinedCategory}
+              disabled={!newCategoryInput.trim()}
+            >
+              <Plus className="h-4 w-4 mr-1" /> Add
+            </Button>
+          </div>
         </div>
         
         <div className="relative w-full my-8 flex flex-col items-center">
@@ -95,6 +129,7 @@ const Index = () => {
                   onChange={(category) => setImageCategory(selectedImageIndex!, category)}
                   onAddCategory={addCategory}
                   disabled={isProcessing}
+                  predefinedCategories={predefinedCategories}
                 />
               </div>
               
