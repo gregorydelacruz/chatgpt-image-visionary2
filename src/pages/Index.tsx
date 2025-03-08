@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { cn } from '@/lib/utils';
@@ -36,7 +35,6 @@ const Index = () => {
     downloadAllAsZip
   } = useImageProcessing();
   
-  // Check if API key is set on component mount
   useEffect(() => {
     setIsApiKeyConfigured(isApiKeySet());
   }, []);
@@ -57,12 +55,10 @@ const Index = () => {
     }
   };
 
-  // Get the current selected image for display
   const currentImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
 
   return (
     <div className="min-h-screen flex flex-col items-center">
-      {/* Main content container */}
       <div className="w-full max-w-4xl mx-auto px-4 py-8 flex flex-col items-center">
         <Header />
         
@@ -76,7 +72,7 @@ const Index = () => {
         <div className="w-full mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Add your own custom categories</span>
+            <span className="text-sm font-medium">Add Your Own Custom Categories</span>
           </div>
           <div className="flex gap-2">
             <Input
