@@ -17,6 +17,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -52,6 +53,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       return;
     }
     
+    // Save the current file
+    setCurrentFile(file);
+    
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -66,6 +70,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const clearImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPreviewImage(null);
+    setCurrentFile(null);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -119,6 +124,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 isProcessing ? "opacity-50" : "opacity-100"
               )} 
             />
+            {currentFile && (
+              <p className="mt-2 text-sm text-center text-muted-foreground truncate">
+                {currentFile.name}
+              </p>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">

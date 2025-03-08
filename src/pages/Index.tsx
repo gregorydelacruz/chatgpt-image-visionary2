@@ -8,7 +8,8 @@ import ApiKeyButton from '@/components/ApiKeyButton';
 import ApiKeyDialog from '@/components/ApiKeyDialog';
 import Footer from '@/components/Footer';
 import { recognizeImage, isApiKeySet } from '@/lib/imageRecognition';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface RecognitionResult {
   label: string;
@@ -22,6 +23,8 @@ const Index = () => {
   const [hasResults, setHasResults] = useState(false);
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
   const [isApiKeyConfigured, setIsApiKeyConfigured] = useState(false);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [renamedFile, setRenamedFile] = useState<File | null>(null);
   
   // Check if API key is set on component mount
   useEffect(() => {
@@ -34,6 +37,9 @@ const Index = () => {
       return;
     }
     
+    setCurrentFile(file);
+    setRenamedFile(null);
+    
     try {
       setIsProcessing(true);
       setHasResults(false);
@@ -43,6 +49,18 @@ const Index = () => {
       
       // Short delay to ensure smooth animation
       await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Create a renamed file based on top result
+      if (recognitionResults.length > 0) {
+        const topLabel = recognitionResults[0].label;
+        const fileExt = file.name.split('.').pop();
+        const newFileName = `${topLabel.toLowerCase().replace(/\s+/g, '-')}.${fileExt}`;
+        
+        // Create a new file with the renamed filename
+        const renamedBlob = file.slice(0, file.size, file.type);
+        const newFile = new File([renamedBlob], newFileName, { type: file.type });
+        setRenamedFile(newFile);
+      }
       
       // Update state with results
       setResults(recognitionResults);
@@ -62,6 +80,31 @@ const Index = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const downloadRenamedImage = () => {
+    if (!renamedFile) return;
+    
+    // Create a temporary URL for the file
+    const url = URL.createObjectURL(renamedFile);
+    
+    // Create a link element
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = renamedFile.name;
+    document.body.appendChild(a);
+    
+    // Trigger the download
+    a.click();
+    
+    // Clean up
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    toast({
+      title: "Download started",
+      description: `Downloading "${renamedFile.name}"`,
+    });
   };
 
   return (
@@ -97,6 +140,18 @@ const Index = () => {
             isLoading={isProcessing} 
             results={results} 
           />
+          
+          {renamedFile && hasResults && (
+            <div className="mt-4 animate-fade-in">
+              <Button 
+                onClick={downloadRenamedImage}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download as "{renamedFile.name}"
+              </Button>
+            </div>
+          )}
         </div>
         
         <Footer />
