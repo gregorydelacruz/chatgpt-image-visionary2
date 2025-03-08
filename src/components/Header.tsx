@@ -95,9 +95,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             </>
           )}
         </div>
-        <p className="text-muted-foreground max-w-md">
-          AI-powered image recognition and categorization made beautiful
-        </p>
+        {/* Removed the paragraph with "AI-powered image recognition..." text */}
       </div>
     </header>
   );

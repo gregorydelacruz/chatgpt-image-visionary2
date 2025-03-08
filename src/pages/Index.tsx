@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { cn } from '@/lib/utils';
@@ -97,16 +96,6 @@ const Index = () => {
         </div>
         
         <div className="relative w-full my-8 flex flex-col items-center">
-          <div className="w-full text-center mb-6 animate-fade-in">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Sparkles className="h-5 w-5 text-amber-500" />
-              <h2 className="text-xl font-semibold tracking-tight">Image Recognition Made Beautiful</h2>
-            </div>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Upload your images and watch as AI intelligently categorizes and processes them with stunning visual results.
-            </p>
-          </div>
-          
           <div className="relative">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl -z-10"></div>
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
