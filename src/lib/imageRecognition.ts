@@ -1,4 +1,3 @@
-
 // This file handles the integration with the OpenAI vision API
 
 // Convert image to base64
@@ -48,8 +47,9 @@ export const clearApiKey = (): void => {
 
 // Validate OpenAI API key format
 const validateApiKey = (apiKey: string): boolean => {
-  // Standard OpenAI API keys start with 'sk-' and are typically 51 characters long
-  return apiKey.startsWith('sk-') && apiKey.length > 20;
+  // Accept both traditional API keys (start with 'sk-') and project API keys (start with 'sk-proj-')
+  return (apiKey.startsWith('sk-') && apiKey.length > 20) || 
+         (apiKey.startsWith('sk-proj-') && apiKey.length > 25);
 };
 
 export const recognizeImage = async (imageFile: File): Promise<Array<{ label: string; confidence: number }>> => {
@@ -60,7 +60,7 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
   }
   
   if (!validateApiKey(apiKey)) {
-    throw new Error('Invalid API key format. OpenAI API keys typically start with "sk-"');
+    throw new Error('Invalid API key format. OpenAI API keys typically start with "sk-" or "sk-proj-"');
   }
   
   try {

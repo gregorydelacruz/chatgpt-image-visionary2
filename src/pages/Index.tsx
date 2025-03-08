@@ -35,7 +35,7 @@ const Index = () => {
         toast({
           variant: "destructive",
           title: "Invalid API Key Format",
-          description: "OpenAI API keys typically start with 'sk-'. Please enter a valid OpenAI API key.",
+          description: "OpenAI API keys should start with 'sk-'. Please enter a valid OpenAI API key.",
         });
         return;
       }
@@ -173,7 +173,7 @@ const Index = () => {
                 Your key will be stored locally in your browser.
               </p>
               <p className="text-sm text-yellow-600 font-medium">
-                Note: API keys should start with "sk-" and should be an OpenAI API key, not a project key.
+                Note: API keys should start with "sk-" and can be either standard keys or project-based keys (sk-proj-...).
               </p>
               <Input
                 type="password"
