@@ -2,9 +2,9 @@
 import { useImageProcessor } from './useImageProcessor';
 import { useCategoryManager } from './useCategoryManager';
 import { useImageDownloader } from './useImageDownloader';
-import { RecognitionResult } from '@/types/image';
+import { ProcessedImage, RecognitionResult } from '@/types/image';
 
-export type { RecognitionResult };
+export type { ProcessedImage, RecognitionResult };
 export { useImageProcessor };
 
 export const useImageProcessing = () => {

@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Loader2, FolderIcon } from 'lucide-react';
-import { ProcessedImage } from '@/hooks/useImageProcessing';
+import { ProcessedImage } from '@/types/image';
 
 interface ImageGalleryProps {
   images: ProcessedImage[];
