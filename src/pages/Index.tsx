@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
+import { cn } from '@/lib/utils';
 import Header from '@/components/Header';
 import ImageUploader from '@/components/ImageUploader';
 import ResultDisplay from '@/components/ResultDisplay';
@@ -8,6 +9,7 @@ import ApiKeyButton from '@/components/ApiKeyButton';
 import ApiKeyDialog from '@/components/ApiKeyDialog';
 import ImageGallery from '@/components/ImageGallery';
 import DownloadButton from '@/components/DownloadButton';
+import CategorySelector from '@/components/CategorySelector';
 import Footer from '@/components/Footer';
 import { isApiKeySet } from '@/lib/imageRecognition';
 
@@ -19,9 +21,13 @@ const Index = () => {
     isProcessing,
     images,
     selectedImageIndex,
+    categories,
     setSelectedImageIndex,
     processImages,
-    downloadRenamedImage
+    downloadRenamedImage,
+    setImageCategory,
+    addCategory,
+    downloadAllAsZip
   } = useImageProcessing();
   
   // Check if API key is set on component mount
@@ -60,6 +66,20 @@ const Index = () => {
             isProcessing={isProcessing} 
           />
           
+          <div className={cn(
+            "w-full transition-opacity duration-300",
+            images.length > 0 ? "opacity-100" : "opacity-0"
+          )}>
+            {images.length > 0 && (
+              <div className="mt-6 flex justify-center">
+                <DownloadButton
+                  isZip={true}
+                  onDownload={downloadAllAsZip}
+                />
+              </div>
+            )}
+          </div>
+          
           <ImageGallery
             images={images}
             selectedImageIndex={selectedImageIndex}
@@ -68,6 +88,16 @@ const Index = () => {
           
           {currentImage && (
             <>
+              <div className="w-full max-w-md mt-6">
+                <CategorySelector
+                  categories={categories}
+                  currentCategory={currentImage.category}
+                  onChange={(category) => setImageCategory(selectedImageIndex!, category)}
+                  onAddCategory={addCategory}
+                  disabled={isProcessing}
+                />
+              </div>
+              
               <ResultDisplay 
                 isVisible={currentImage.isCompleted} 
                 isLoading={currentImage.isProcessing} 
