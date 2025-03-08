@@ -1,3 +1,4 @@
+
 // This file handles the integration with the OpenAI vision API
 
 // Convert image to base64
@@ -17,12 +18,6 @@ export const imageToBase64 = (file: File): Promise<string> => {
     reader.onerror = error => reject(error);
   });
 };
-
-// Interface for OpenAI API responses
-interface OpenAIVisionResponse {
-  label: string;
-  confidence: number;
-}
 
 // Get the OpenAI API key from localStorage
 const getApiKey = (): string => {
@@ -77,17 +72,26 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
         messages: [
           {
             role: 'system',
-            content: 'You are an expert in image recognition. Analyze the provided image and return exactly 5 objects or concepts visible in the image, with confidence scores. Your response must be ONLY a valid JSON array with no markdown formatting, no code blocks, and no explanations. Format: [{\"label\": \"object name\", \"confidence\": 0.95}, ...]'
+            content: [
+              {
+                type: 'text',
+                text: 'You are an AI that describes images in simple, plain English. Your task is to identify 5 distinct objects or concepts visible in the image. For each item, provide a descriptive label and a confidence score between 0 and 1. Return ONLY a valid JSON array with this format: [{\"label\": \"object name\", \"confidence\": 0.95}, ...]. No explanations, markdown, or code blocks.'
+              }
+            ]
           },
           {
             role: 'user',
             content: [
-              { type: 'text', text: 'What objects do you see in this image? Return ONLY raw JSON.' },
-              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+              {
+                type: 'image_url',
+                image_url: { 
+                  url: `data:image/jpeg;base64,${base64Image}` 
+                }
+              }
             ]
           }
         ],
-        max_tokens: 300,
+        max_tokens: 150,
         temperature: 0.2
       })
     });
@@ -101,7 +105,7 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
     
     const data = await response.json();
     
-    // Parse the response content which should be a JSON string
+    // Parse the response content
     try {
       // Extract the message content and clean it up
       const content = data.choices[0].message.content.trim();
