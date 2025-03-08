@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Edit2 } from 'lucide-react';
+import { Edit2, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   };
 
   return (
-    <header className={cn("w-full pt-6 pb-4 px-4 md:px-6 animate-slide-down", className)}>
+    <header className={cn("w-full pt-6 pb-4 px-4 md:px-6", className)}>
       <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
         <div className="flex items-center gap-2 mb-2">
           {isEditing ? (
@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                 value={tempName}
                 onChange={(e) => setTempName(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="h-10 text-3xl md:text-4xl font-bold px-2 py-1 w-auto min-w-[150px] text-center"
+                className="h-12 text-3xl md:text-4xl font-bold px-2 py-1 w-auto min-w-[150px] text-center"
                 autoFocus
               />
               <Button
@@ -69,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
               </Button>
               <Button 
                 size="sm" 
-                className="ml-1"
+                className="ml-1 bg-blue-500 hover:bg-blue-600"
                 onClick={handleRename}
               >
                 Save
@@ -77,7 +77,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             </div>
           ) : (
             <>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              <Sparkles className="h-6 w-6 text-amber-500" />
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
                 {appName}
               </h1>
               <Button 
@@ -94,6 +95,9 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             </>
           )}
         </div>
+        <p className="text-muted-foreground max-w-md">
+          AI-powered image recognition and categorization made beautiful
+        </p>
       </div>
     </header>
   );

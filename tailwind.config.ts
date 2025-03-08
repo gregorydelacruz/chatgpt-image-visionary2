@@ -66,6 +66,29 @@ export default {
                     900: '#0f4570',
                     950: '#0a2a4a',
                 },
+                amber: {
+                    100: '#fff3c9',
+                    200: '#ffe899',
+                    300: '#ffdc69',
+                    400: '#ffd139',
+                    500: '#ffc509',
+                    600: '#cc9e07',
+                    700: '#997605',
+                    800: '#664f04',
+                    900: '#332702',
+                },
+                purple: {
+                    50: '#fbf7fe',
+                    100: '#f5ebfd',
+                    200: '#ead8fa',
+                    300: '#dab6f5',
+                    400: '#c288ee',
+                    500: '#a855e7',
+                    600: '#8f34cb',
+                    700: '#7927a8',
+                    800: '#65238a',
+                    900: '#522071',
+                },
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -122,6 +145,18 @@ export default {
                 'scale-up': {
                     '0%': { transform: 'scale(0.95)', opacity: '0' },
                     '100%': { transform: 'scale(1)', opacity: '1' }
+                },
+                'pulse': {
+                    '0%, 100%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.05)' }
+                },
+                'float': {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' }
+                },
+                'shimmer': {
+                    '0%': { backgroundPosition: '-200% 0' },
+                    '100%': { backgroundPosition: '200% 0' }
                 }
 			},
 			animation: {
@@ -132,8 +167,15 @@ export default {
                 'slide-up': 'slide-up 0.4s ease-out',
                 'slide-down': 'slide-down 0.4s ease-out',
                 'pulse-light': 'pulse-light 2s ease-in-out infinite',
-                'scale-up': 'scale-up 0.3s ease-out'
-			}
+                'scale-up': 'scale-up 0.3s ease-out',
+                'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'float': 'float 3s ease-in-out infinite',
+                'shimmer': 'shimmer 2s linear infinite'
+			},
+            backgroundImage: {
+                'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                'gradient-shimmer': 'linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)'
+            }
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

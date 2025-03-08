@@ -1,10 +1,18 @@
 
 import React from 'react';
+import { cn } from '@/lib/utils';
+import { Heart } from 'lucide-react';
 
-const Footer: React.FC = () => {
+type FooterProps = {
+  className?: string;
+};
+
+const Footer: React.FC<FooterProps> = ({ className }) => {
   return (
-    <footer className="mt-auto pt-6 pb-8 text-center text-sm text-muted-foreground">
-      
+    <footer className={cn("w-full text-center text-sm text-muted-foreground", className)}>
+      <div className="glass px-4 py-3 rounded-xl inline-flex items-center gap-1">
+        Made with <Heart className="h-3 w-3 text-red-500 animate-pulse" /> by your name
+      </div>
     </footer>
   );
 };

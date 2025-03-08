@@ -15,7 +15,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { isApiKeySet } from '@/lib/imageRecognition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tag, Plus } from 'lucide-react';
+import { Tag, Plus, Sparkles, ImageIcon } from 'lucide-react';
 
 const Index = () => {
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
@@ -60,11 +60,13 @@ const Index = () => {
   const currentImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
-      <div className="w-full max-w-4xl mx-auto px-4 py-8 flex flex-col items-center">
-        <Header />
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-background to-muted/50">
+      <div className="relative w-full max-w-4xl mx-auto px-4 py-8 flex flex-col items-center">
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-b-3xl -z-10 blur-3xl"></div>
         
-        <div className="flex items-center justify-center mb-4 gap-2">
+        <Header className="animate-slide-down" />
+        
+        <div className="flex items-center justify-center mb-6 gap-3 animate-fade-in">
           <ApiKeyButton 
             isConfigured={isApiKeyConfigured} 
             onClick={() => setIsApiKeyDialogOpen(true)} 
@@ -72,9 +74,9 @@ const Index = () => {
           <ThemeToggle />
         </div>
         
-        <div className="w-full mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Tag className="h-4 w-4 text-muted-foreground" />
+        <div className="w-full mb-8 glass p-5 rounded-xl animate-scale-up shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <Tag className="h-5 w-5 text-blue-500" />
             <span className="text-sm font-medium">Add Your Own Custom Categories</span>
           </div>
           <div className="flex gap-2">
@@ -82,11 +84,12 @@ const Index = () => {
               value={newCategoryInput}
               onChange={(e) => setNewCategoryInput(e.target.value)}
               placeholder="Add a predefined category"
-              className="flex-1"
+              className="flex-1 border-blue-200 focus-visible:ring-blue-400"
             />
             <Button 
               onClick={handleAddPredefinedCategory}
               disabled={!newCategoryInput.trim()}
+              className="bg-blue-500 hover:bg-blue-600 transition-colors"
             >
               <Plus className="h-4 w-4 mr-1" /> Add
             </Button>
@@ -94,17 +97,31 @@ const Index = () => {
         </div>
         
         <div className="relative w-full my-8 flex flex-col items-center">
-          <ImageUploader 
-            onImageSelected={handleImagesSelected} 
-            isProcessing={isProcessing} 
-          />
+          <div className="w-full text-center mb-6 animate-fade-in">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              <h2 className="text-xl font-semibold tracking-tight">Image Recognition Made Beautiful</h2>
+            </div>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Upload your images and watch as AI intelligently categorizes and processes them with stunning visual results.
+            </p>
+          </div>
+          
+          <div className="relative">
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -z-10"></div>
+            <ImageUploader 
+              onImageSelected={handleImagesSelected} 
+              isProcessing={isProcessing} 
+            />
+          </div>
           
           <div className={cn(
-            "w-full transition-opacity duration-300",
+            "w-full transition-opacity duration-500",
             images.length > 0 ? "opacity-100" : "opacity-0"
           )}>
             {images.length > 0 && (
-              <div className="mt-6 flex justify-center">
+              <div className="mt-8 flex justify-center animate-fade-in">
                 <DownloadButton
                   isZip={true}
                   onDownload={downloadAllAsZip}
@@ -113,15 +130,23 @@ const Index = () => {
             )}
           </div>
           
-          <ImageGallery
-            images={images}
-            selectedImageIndex={selectedImageIndex}
-            onImageSelect={setSelectedImageIndex}
-          />
+          {images.length > 0 && (
+            <div className="w-full mt-10 glass p-6 rounded-xl shadow-sm animate-slide-up">
+              <ImageGallery
+                images={images}
+                selectedImageIndex={selectedImageIndex}
+                onImageSelect={setSelectedImageIndex}
+              />
+            </div>
+          )}
           
           {currentImage && (
-            <>
-              <div className="w-full max-w-md mt-6">
+            <div className="w-full mt-8 flex flex-col md:flex-row gap-6 animate-fade-in">
+              <div className="w-full md:w-1/2 glass p-5 rounded-xl shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <ImageIcon className="h-5 w-5 text-blue-500" />
+                  <h3 className="font-medium">Image Category</h3>
+                </div>
                 <CategorySelector
                   categories={categories}
                   currentCategory={currentImage.category}
@@ -132,23 +157,27 @@ const Index = () => {
                 />
               </div>
               
-              <ResultDisplay 
-                isVisible={currentImage.isCompleted} 
-                isLoading={currentImage.isProcessing} 
-                results={currentImage.results} 
-              />
-              
-              {currentImage.renamedFile && currentImage.isCompleted && (
-                <DownloadButton
-                  fileName={currentImage.renamedFile.name}
-                  onDownload={() => downloadRenamedImage(selectedImageIndex!)}
+              <div className="w-full md:w-1/2">
+                <ResultDisplay 
+                  isVisible={currentImage.isCompleted} 
+                  isLoading={currentImage.isProcessing} 
+                  results={currentImage.results} 
                 />
-              )}
-            </>
+                
+                {currentImage.renamedFile && currentImage.isCompleted && (
+                  <div className="mt-4 flex justify-center">
+                    <DownloadButton
+                      fileName={currentImage.renamedFile.name}
+                      onDownload={() => downloadRenamedImage(selectedImageIndex!)}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
         
-        <Footer />
+        <Footer className="mt-10" />
       </div>
       
       <ApiKeyDialog
