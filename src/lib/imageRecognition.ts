@@ -1,5 +1,5 @@
 
-// This file handles the integration with the vision API
+// This file handles the integration with the OpenAI vision API
 
 // Convert image to base64
 export const imageToBase64 = (file: File): Promise<string> => {
@@ -19,47 +19,101 @@ export const imageToBase64 = (file: File): Promise<string> => {
   });
 };
 
-// Mock API call for now - this will be replaced with actual OpenAI integration
+// Interface for OpenAI API responses
+interface OpenAIVisionResponse {
+  label: string;
+  confidence: number;
+}
+
+// Get the OpenAI API key from localStorage
+const getApiKey = (): string => {
+  return localStorage.getItem('openai_api_key') || '';
+};
+
+// Save the OpenAI API key to localStorage
+export const saveApiKey = (apiKey: string): void => {
+  localStorage.setItem('openai_api_key', apiKey);
+};
+
+// Check if the API key is set
+export const isApiKeySet = (): boolean => {
+  const apiKey = getApiKey();
+  return !!apiKey;
+};
+
+// Clear the API key from localStorage
+export const clearApiKey = (): void => {
+  localStorage.removeItem('openai_api_key');
+};
+
 export const recognizeImage = async (imageFile: File): Promise<Array<{ label: string; confidence: number }>> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  const apiKey = getApiKey();
   
-  // Mock response - in a real app, this would call the OpenAI API
-  // The fileName helps us generate somewhat relevant mock results
-  const fileName = imageFile.name.toLowerCase();
+  if (!apiKey) {
+    throw new Error('API key not set');
+  }
   
-  if (fileName.includes('cat') || fileName.includes('kitten')) {
-    return [
-      { label: 'Domestic Cat', confidence: 0.98 },
-      { label: 'Feline', confidence: 0.94 },
-      { label: 'Pet', confidence: 0.87 },
-      { label: 'Mammal', confidence: 0.82 },
-      { label: 'Carnivore', confidence: 0.76 }
-    ];
-  } else if (fileName.includes('dog') || fileName.includes('puppy')) {
-    return [
-      { label: 'Dog', confidence: 0.97 },
-      { label: 'Canine', confidence: 0.93 },
-      { label: 'Pet', confidence: 0.89 },
-      { label: 'Mammal', confidence: 0.84 },
-      { label: 'Domestic Animal', confidence: 0.79 }
-    ];
-  } else if (fileName.includes('food') || fileName.includes('meal')) {
-    return [
-      { label: 'Food', confidence: 0.96 },
-      { label: 'Meal', confidence: 0.88 },
-      { label: 'Cuisine', confidence: 0.82 },
-      { label: 'Dish', confidence: 0.77 },
-      { label: 'Gastronomy', confidence: 0.71 }
-    ];
-  } else {
-    // Default random results
-    return [
-      { label: 'Object', confidence: 0.89 },
-      { label: 'Item', confidence: 0.76 },
-      { label: 'Thing', confidence: 0.65 },
-      { label: 'Material', confidence: 0.58 },
-      { label: 'Artifact', confidence: 0.42 }
-    ];
+  try {
+    const base64Image = await imageToBase64(imageFile);
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert in image recognition. Analyze the provided image and return exactly 5 objects or concepts visible in the image, with confidence scores. Return ONLY a JSON array with the format: [{"label": "object name", "confidence": 0.95}, ...] with no additional text or explanation.'
+          },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: 'What objects do you see in this image? Return the result as JSON only.' },
+              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
+            ]
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.2
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenAI API error:', errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Parse the response content which should be a JSON string
+    try {
+      // Extract the JSON array from the message content
+      const content = data.choices[0].message.content.trim();
+      console.log('OpenAI response:', content);
+      
+      // Try to parse the JSON response
+      const parsedContent = JSON.parse(content);
+      
+      // Validate the response format
+      if (Array.isArray(parsedContent)) {
+        return parsedContent.map(item => ({
+          label: item.label || "Unknown",
+          confidence: item.confidence || 0.5
+        })).slice(0, 5); // Ensure we return exactly 5 items
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response:', parseError);
+      throw new Error('Failed to parse recognition results');
+    }
+  } catch (error) {
+    console.error('Error in image recognition:', error);
+    throw error;
   }
 };
