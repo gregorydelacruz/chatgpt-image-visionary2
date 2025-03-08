@@ -46,11 +46,21 @@ export const clearApiKey = (): void => {
   localStorage.removeItem('openai_api_key');
 };
 
+// Validate OpenAI API key format
+const validateApiKey = (apiKey: string): boolean => {
+  // Standard OpenAI API keys start with 'sk-' and are typically 51 characters long
+  return apiKey.startsWith('sk-') && apiKey.length > 20;
+};
+
 export const recognizeImage = async (imageFile: File): Promise<Array<{ label: string; confidence: number }>> => {
   const apiKey = getApiKey();
   
   if (!apiKey) {
     throw new Error('API key not set');
+  }
+  
+  if (!validateApiKey(apiKey)) {
+    throw new Error('Invalid API key format. OpenAI API keys typically start with "sk-"');
   }
   
   try {
@@ -83,9 +93,10 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      const errorData = await response.json().catch(() => null);
+      const errorMessage = errorData?.error?.message || `OpenAI API error: ${response.status}`;
+      console.error('OpenAI API error:', errorData || response.statusText);
+      throw new Error(errorMessage);
     }
     
     const data = await response.json();
