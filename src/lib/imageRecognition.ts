@@ -67,12 +67,12 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
         messages: [
           {
             role: 'system',
-            content: 'You are an expert in image recognition. Analyze the provided image and return exactly 5 objects or concepts visible in the image, with confidence scores. Return ONLY a JSON array with the format: [{"label": "object name", "confidence": 0.95}, ...] with no additional text or explanation.'
+            content: 'You are an expert in image recognition. Analyze the provided image and return exactly 5 objects or concepts visible in the image, with confidence scores. Your response must be ONLY a valid JSON array with no markdown formatting, no code blocks, and no explanations. Format: [{\"label\": \"object name\", \"confidence\": 0.95}, ...]'
           },
           {
             role: 'user',
             content: [
-              { type: 'text', text: 'What objects do you see in this image? Return the result as JSON only.' },
+              { type: 'text', text: 'What objects do you see in this image? Return ONLY raw JSON.' },
               { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
             ]
           }
@@ -92,12 +92,19 @@ export const recognizeImage = async (imageFile: File): Promise<Array<{ label: st
     
     // Parse the response content which should be a JSON string
     try {
-      // Extract the JSON array from the message content
+      // Extract the message content and clean it up
       const content = data.choices[0].message.content.trim();
       console.log('OpenAI response:', content);
       
+      // Remove any markdown code block indicators if present
+      const cleanedContent = content
+        .replace(/^```json\s*/i, '')
+        .replace(/```\s*$/i, '')
+        .replace(/^```\s*/i, '')
+        .trim();
+      
       // Try to parse the JSON response
-      const parsedContent = JSON.parse(content);
+      const parsedContent = JSON.parse(cleanedContent);
       
       // Validate the response format
       if (Array.isArray(parsedContent)) {
