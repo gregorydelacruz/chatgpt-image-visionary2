@@ -49,7 +49,8 @@ export const useImageDownloader = (images: ProcessedImage[]) => {
       const categoryFolders: Record<string, JSZip> = {};
       
       for (const image of images) {
-        if (!image.renamedFile || !image.isCompleted) continue;
+        // Use the original file if renamed file is not available
+        const fileToDownload = image.renamedFile || image.originalFile;
         
         // Get or create the folder for this category
         if (!categoryFolders[image.category]) {
@@ -57,10 +58,13 @@ export const useImageDownloader = (images: ProcessedImage[]) => {
         }
         
         // Convert file to blob
-        const blob = await image.renamedFile.arrayBuffer();
+        const blob = await fileToDownload.arrayBuffer();
+        
+        // Use original filename if renamed file is not available
+        const fileName = image.renamedFile ? image.renamedFile.name : image.originalFile.name;
         
         // Add file to its category folder
-        categoryFolders[image.category].file(image.renamedFile.name, blob);
+        categoryFolders[image.category].file(fileName, blob);
       }
       
       // Generate zip file
@@ -80,7 +84,7 @@ export const useImageDownloader = (images: ProcessedImage[]) => {
       
       toast({
         title: "Download started",
-        description: "Downloading categorized images as zip file.",
+        description: "Downloading all images as zip file.",
       });
     } catch (error) {
       console.error('Error creating zip file:', error);
