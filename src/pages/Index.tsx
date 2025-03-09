@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { isApiKeySet } from '@/lib/imageRecognition';
@@ -13,6 +14,7 @@ import PricingSection from '@/components/PricingSection';
 import ProductDemoSection from '@/components/ProductDemoSection';
 import ContactSection from '@/components/ContactSection';
 import FaqSection from '@/components/FaqSection';
+import ConciergeSection from '@/components/ConciergeSection';
 import CtaSection from '@/components/CtaSection';
 
 const Index = () => {
@@ -85,6 +87,9 @@ const Index = () => {
         categories={categories}
         predefinedCategories={predefinedCategories}
       />
+      
+      {/* Concierge Service Section */}
+      <ConciergeSection />
       
       {/* FAQ Section */}
       <FaqSection />
