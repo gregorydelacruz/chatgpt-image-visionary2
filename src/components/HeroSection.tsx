@@ -15,7 +15,7 @@ const HeroSection: React.FC = () => {
           Too many scattered photos? Our super service re-names, organizes, and compiles them into categorized folders in one zip file so you can finally find what matters.
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground">
-          Upload your images and let our intelligent system categorize and process them automatically. Save time and organize better.
+          📂 "Tame Your Photo Chaos – Try It Free!"
         </p>
         <div className="flex flex-col sm:flex-row gap-4 pt-2">
           <Button 
