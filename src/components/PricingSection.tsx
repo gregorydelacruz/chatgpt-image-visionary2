@@ -33,7 +33,7 @@ const PricingSection = () => {
       },
       description: "Perfect for trying out Vision's features.",
       features: [
-        { text: "Process up to 50 images per month", included: true },
+        { text: "Process up to 25 images per month", included: true },
         { text: "Basic image categorization", included: true },
         { text: "Download processed images", included: true },
         { text: "Email support", included: false },
@@ -52,7 +52,7 @@ const PricingSection = () => {
       },
       description: "For professionals who need more power.",
       features: [
-        { text: "Process up to 1,000 images per month", included: true },
+        { text: "Process up to 100 images per month", included: true },
         { text: "Advanced image categorization", included: true },
         { text: "Download processed images", included: true },
         { text: "Email support", included: true },
@@ -72,7 +72,7 @@ const PricingSection = () => {
       },
       description: "For teams that need it all.",
       features: [
-        { text: "Unlimited image processing", included: true },
+        { text: "Process up to 2000 images per month", included: true },
         { text: "Advanced image categorization", included: true },
         { text: "Download processed images", included: true },
         { text: "Priority support", included: true },
