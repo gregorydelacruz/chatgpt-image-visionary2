@@ -3,7 +3,12 @@ import React, { useState } from 'react';
 import { Check, X, DollarSign, Zap, Star } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { loadStripe } from '@stripe/stripe-js';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+
+// Initialize Stripe - Replace with your actual publishable key in production
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 type PricingTier = {
   name: string;
@@ -19,10 +24,16 @@ type PricingTier = {
   highlighted?: boolean;
   callToAction: string;
   icon: React.ReactNode;
+  priceId: {
+    monthly: string; 
+    yearly: string;
+  };
 }
 
 const PricingSection = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const pricingTiers: PricingTier[] = [
     {
@@ -42,7 +53,11 @@ const PricingSection = () => {
         { text: "API access", included: false },
       ],
       callToAction: "Get Started",
-      icon: <DollarSign className="h-5 w-5 text-blue-500" />
+      icon: <DollarSign className="h-5 w-5 text-blue-500" />,
+      priceId: {
+        monthly: 'free',
+        yearly: 'free'
+      }
     },
     {
       name: "Pro",
@@ -62,7 +77,11 @@ const PricingSection = () => {
       ],
       highlighted: true,
       callToAction: "Upgrade Now",
-      icon: <Zap className="h-5 w-5 text-amber-500" />
+      icon: <Zap className="h-5 w-5 text-amber-500" />,
+      priceId: {
+        monthly: 'price_1OqPcJKM1vZrZECz2bvZLNYx',
+        yearly: 'price_1OqPcfKM1vZrZECz8hOQWxJO'
+      }
     },
     {
       name: "Enterprise",
@@ -81,9 +100,73 @@ const PricingSection = () => {
         { text: "API access", included: true },
       ],
       callToAction: "Contact Sales",
-      icon: <Star className="h-5 w-5 text-purple-500" />
+      icon: <Star className="h-5 w-5 text-purple-500" />,
+      priceId: {
+        monthly: 'price_1OqPdKKM1vZrZECzVDzBlYKt',
+        yearly: 'price_1OqPdfKM1vZrZECzUe4fhJGT'
+      }
     }
   ];
+
+  const handlePayment = async (tier: PricingTier) => {
+    if (tier.name === "Free") {
+      toast({
+        title: "Free Plan Selected",
+        description: "You're already on the free plan. No payment needed!",
+      });
+      return;
+    }
+    
+    if (tier.name === "Enterprise" && tier.callToAction === "Contact Sales") {
+      toast({
+        title: "Contact Sales",
+        description: "Please contact our sales team for enterprise pricing.",
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(tier.name);
+
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error("Stripe failed to load");
+
+      // In a real app, this would be an API call to your server
+      // which would create a Checkout Session and return the ID
+      const mockCheckoutSession = {
+        id: `cs_test_${Math.random().toString(36).substring(2, 15)}`,
+        url: `https://checkout.stripe.com/pay/${Math.random().toString(36).substring(2, 15)}`
+      };
+
+      toast({
+        title: "Redirecting to Checkout",
+        description: "Please wait while we redirect you to our secure payment page.",
+      });
+
+      // Simulate API call delay
+      setTimeout(() => {
+        // In a real app, you would redirect to the checkout session URL
+        // window.location.href = mockCheckoutSession.url;
+        
+        toast({
+          title: "Demo Mode",
+          description: "This is a demo. In a real app, you would be redirected to Stripe Checkout. The priceId used would be: " + 
+            tier.priceId[billingCycle],
+        });
+        
+        setIsLoading(null);
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast({
+        title: "Payment Error",
+        description: "There was a problem initiating your payment. Please try again.",
+        variant: "destructive",
+      });
+      setIsLoading(null);
+    }
+  };
 
   return (
     <section id="pricing-section" className="w-full max-w-7xl mx-auto px-4 py-16">
@@ -176,8 +259,10 @@ const PricingSection = () => {
                   tier.highlighted ? "bg-blue-600 hover:bg-blue-700" : ""
                 )}
                 variant={tier.highlighted ? "default" : "outline"}
+                onClick={() => handlePayment(tier)}
+                disabled={isLoading === tier.name}
               >
-                {tier.callToAction}
+                {isLoading === tier.name ? "Processing..." : tier.callToAction}
               </Button>
             </CardFooter>
           </Card>
