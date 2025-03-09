@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { cn } from '@/lib/utils';
@@ -17,8 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   Tag, Plus, Sparkles, ImageIcon, Check, MessageCircle, 
-  ArrowRight, Video, Search, Star, Users, Mail 
+  ArrowRight, Video, Search, Star, Users, Mail, X 
 } from 'lucide-react';
+import PricingSection from '@/components/PricingSection';
 
 const Index = () => {
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
@@ -64,10 +64,8 @@ const Index = () => {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send this to your backend
     console.log("Subscribed:", email);
     setEmail('');
-    // Show a confirmation
     alert("Thanks for subscribing!");
   };
 
@@ -183,6 +181,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      {/* Pricing Section */}
+      <PricingSection />
       
       {/* Product Demo/Upload Section */}
       <section id="upload-section" className="w-full max-w-7xl mx-auto px-4 py-16 mb-8">
