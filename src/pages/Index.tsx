@@ -16,6 +16,7 @@ import ContactSection from '@/components/ContactSection';
 import FaqSection from '@/components/FaqSection';
 import ConciergeSection from '@/components/ConciergeSection';
 import CtaSection from '@/components/CtaSection';
+import EmailCaptureSection from '@/components/EmailCaptureSection';
 
 const Index = () => {
   const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
@@ -87,6 +88,9 @@ const Index = () => {
         categories={categories}
         predefinedCategories={predefinedCategories}
       />
+      
+      {/* Email Capture Section - Moved here below the product demo */}
+      <EmailCaptureSection />
       
       {/* Concierge Service Section */}
       <ConciergeSection />
