@@ -12,7 +12,7 @@ const HeroSection: React.FC = () => {
           <span>Intelligent Image Processing</span>
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-          Transform Your Images With AI Power
+          Too many scattered photos? Our super service re-names, organizes, and compiles them into categorized folders in one zip file so you can finally find what matters.
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground">
           Upload your images and let our intelligent system categorize and process them automatically. Save time and organize better.
