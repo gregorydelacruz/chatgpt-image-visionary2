@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
           <Sparkles className="h-3.5 w-3.5 mr-1" />
           <span>Intelligent Image Processing</span>
         </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
           Too many scattered photos? Our super service re-names, organizes, and compiles them into categorized folders in one zip file so you can finally find what matters.
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground">
